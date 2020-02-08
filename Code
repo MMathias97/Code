@@ -1,0 +1,48 @@
+   
+import requests
+import statistics as stat  
+import numpy as np 
+
+PP_ADDRESS = "http://192.168.43.1:8080"
+#PP_CHANNELS = ["accX", "accY", "accZ"] #If using different CC channels, define multiple phyphox buffers
+PP_CHANNELSX = ["gyrX=full"]
+PP_CHANNELSY = ["gyrY=full"]
+PP_CHANNELSZ = ["gyrZ=full"]
+
+urlx = PP_ADDRESS + "/get?" + ("&".join(PP_CHANNELSX))
+urly = PP_ADDRESS + "/get?" + ("&".join(PP_CHANNELSY))
+urlz = PP_ADDRESS + "/get?" + ("&".join(PP_CHANNELSZ))
+
+datax = requests.get(urlx)
+datay = requests.get(urly)
+dataz = requests.get(urlz)
+
+dataz.content  #same for other axes
+
+wx=-6.540816587875077e-05
+sx=0.0017250311182644671
+
+wy=3.2736783377219836e-05
+sy=0.0015265088009392047
+
+
+wz=-0.0001357686414409063
+sz=0.0015069746559151606
+
+w=np.sqrt(wx**2+wy**2+wz**2)
+sw=np.sqrt(sx**2+sy**2+sz**2)
+
+
+#w=2*3.14/24/60/60s=0.000073rad/s. 
+        
+'''       
+/control?cmd=start
+
+/control?cmd=stop 
+
+/control?cmd=clear 
+
+/control?cmd=set&buffer=abc&value=42  #Writes the value 42 into the buffer abc (typically used for edit fields)
+
+/export?format=2 
+'''
