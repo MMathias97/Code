@@ -1,0 +1,63 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb 15 18:06:59 2020
+
+"""
+
+import requests
+import time
+from datetime import datetime 
+
+
+class Phyphox(object):
+            
+    def __init__(self, adresse_IP):
+        self.adress = "http://" + str(adresse_IP)
+    
+    def get_idn(self):
+        return self.adress
+    
+    def get_data(self,channel,duree,controls):
+        
+        Values=[]
+        for i in range(len(channel)):
+            Values.append([])
+            
+        if duree==None:
+            url = self.adress + "/get?" + ("&".join(channel))
+            data = requests.get(url=url).json()
+            for i, control in enumerate(controls):
+                value = data["buffer"][channel[i]]["buffer"][0]
+                Values[i].append(value)
+        else:
+            time.sleep(5)
+            t1 = datetime.now()
+            print("GO")
+            while (datetime.now()-t1).seconds <= duree:
+                url = self.adress + "/get?" + ("&".join(channel))
+                data = requests.get(url=url).json()
+                for i, control in enumerate(controls):
+                    value = data["buffer"][channel[i]]["buffer"][0]
+                    Values[i].append(value)
+            print (Values)
+                
+        return Values
+    
+    def inclinaison(self):
+        channel=["tiltFlatUD","tiltUprightUD"]
+        M_CONTROLS = [1, 2]
+        return self.get_data(channel,None,M_CONTROLS)
+    
+    def magnetometre(self,duree):
+        PP_CHANNELS = ["magX", "magY", "magZ"]
+        M_CONTROLS = [1, 2, 3]
+        return self.get_data(PP_CHANNELS,duree,M_CONTROLS)
+    
+    def gyroscope(self,duree):
+        PP_CHANNELS = ["gyrX", "gyrY", "gyrZ"]
+        M_CONTROLS = [1, 2, 3]
+        return self.get_data(PP_CHANNELS,duree,M_CONTROLS)
+    
+telephone=Phyphox("192.168.43.1:8080")
+print(telephone.inclinaison())
+#print(telephone.magnetometre(10))
