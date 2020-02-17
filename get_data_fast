@@ -1,0 +1,40 @@
+PP_ADDRESS = "http://192.168.43.1:8080"
+PP_CHANNELS = ["magX", "magY", "magZ"] #If using different CC channels, define multiple phyphox buffers
+#PP_CHANNELS = ["magX"]
+M_CONTROLS = [1, 2, 3] #You can send on different CC channels
+#M_CONTROLS = [70]
+
+import requests
+import time
+    
+from datetime import datetime
+import matplotlib.pyplot as plt
+import numpy as np
+time.sleep(5)
+t1 = datetime.now()
+duree=10
+
+print("GO")
+Values=[[],[],[]]
+while (datetime.now()-t1).seconds <= duree:
+    url = PP_ADDRESS + "/get?" + ("&".join(PP_CHANNELS))
+    data = requests.get(url=url).json()
+    for i, control in enumerate(M_CONTROLS):
+
+        #Uncomment to send CC messages
+        value = data["buffer"][PP_CHANNELS[i]]["buffer"][0]
+        Values[i].append(value)
+        #print (Values)
+        #print("Sending CC channel " + str(M_CHANNEL) + ", control " + str(control) + ", value " + str(value))
+print(Values)
+
+time=np.arange(len(Values[0]))/len(Values[0])*duree
+
+plt.plot(time,Values[0])
+plt.plot(time,Values[1])
+plt.plot(time,Values[2])
+plt.legend(['X','Y','Z'])
+plt.title('Champ magnétique au cours du temps')
+plt.xlabel('$t$')
+plt.ylabel('$B$')
+plt.show()
